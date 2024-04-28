@@ -1,5 +1,5 @@
 # Purpose
-The goal of this project is to improve hospital care effiency by reducing the cost of early discharge. 
+The goal of this project is to improve hospital care efficiency by reducing the cost of early discharge. 
 
 ## Hypothesis
 By using EMR data from the hospital that details how a patient is treated per encounter, we can train a model that will help average the length of stay for a specific encounter. Helping the hospital be able to plan for additional resources. 
