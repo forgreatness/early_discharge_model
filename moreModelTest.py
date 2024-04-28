@@ -9,8 +9,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 encountersData = pd.read_csv('./diabetic_data.csv')
+
+""" Invoking needed object """
+standardScaler = StandardScaler()
+labelEncoder = LabelEncoder()
 
 """ Data Preprocessing """
 # . Remove undefined | null | not a number row
@@ -55,10 +60,50 @@ print(encountersData['age'].value_counts())
 ####      Feature Selection     ####
 selectedFeatures = pd.Series(['race', 'gender', 'age', 'time_in_hospital', 'num_procedures', 'num_medications', 'readmitted'])
 featureSelectedEncounters = encountersData[selectedFeatures]
-print(featureSelectedEncounters)
+
+####      Label Encoder       ####
+featureSelectedEncounters['race'] = labelEncoder.fit_transform(featureSelectedEncounters['race'])
+featureSelectedEncounters['gender'] = labelEncoder.fit_transform(featureSelectedEncounters['gender'])
+
+####      Splitting data into Train/Test Set     ####
+dataY = featureSelectedEncounters['readmitted']
+dataX = featureSelectedEncounters.drop(columns = ['readmitted'], axis=1)
+x_train, x_test, y_train, y_test = train_test_split(dataX, dataY, random_state=42) #random_state should be a seed
+
+####      Feature Scaling      ####
+xScaler = standardScaler.fit(x_train)
+scaled_x_train = xScaler.transform(x_train)
+scaled_x_test = xScaler.transform(x_test)
+
+print(scaled_x_test)
 
 # print("Show me what the readmitted columns looks like", encountersData['readmitted'].unique())
 # print("show me the count for each unique value", encountersData['readmitted'].value_counts())
+
+
+
+
+
+
+"""   MODEL SELECTION   """
+decisionTreeModel = DecisionTreeClassifier(random_state=42)
+randomForestModel = RandomForestClassifier(random_state=42)
+knnModel = KNeighborsClassifier()
+lrModel = LogisticRegression(fit_intercept=True, solver='liblinear', penalty='l1', random_state=42)
+testingModels = [decisionTreeModel, randomForestModel, knnModel, lrModel]
+
+import timeit
+
+for model in testingModels:
+    start = timeit.timeit()
+    model.fit(scaled_x_train, y_train)
+    y_pred = model.predict(x_test)
+    end = timeit.timeit()
+    print(f'Model: {type(model).__name__}')
+    print(f'Time to Run: {end - start} seconds')
+    print(f'Train Score: {model.score(scaled_x_train, y_train)}')
+    print(f'Test Score: {model.score(scaled_x_test, y_test)}\n')
+
 
 """ Data Visualization """
 def showReadmittedVisualization():
