@@ -111,7 +111,7 @@ for model in testingModels:
     print(f'Model: {type(model).__name__}')
     print(classification_report(y_test, y_pred))
     
-    
+
     
 """          Cross-Validation            """
 # from sklearn.model_selection import ShuffleSplit
@@ -201,7 +201,70 @@ x_train, x_test, y_train, y_test = train_test_split(scaled_x_train_resampled, y_
 lr2 = LogisticRegression(fit_intercept=True, penalty='l2')
 lr2.fit(x_train, y_train)
 y_pred = lr2.predict(x_test)
-print(classification_report(y_test, y_pred))
+lr2PerformanceReport = classification_report(y_test, y_pred, output_dict=True)
+print("Logistic Regression Performance Recap after SMOTE\n", lr2PerformanceReport)
+
+"""      Initlizing New Model       """
+# Once we are able to use SMOTE and get more data it is now store in scaled_x_train_resampled. That data is splitted into
+# training data and testing data which we need to use for all models to see the performance """
+decisionTreeModel2 = DecisionTreeClassifier(criterion='gini', random_state=42, max_depth=10, min_samples_split=10)
+decisionTreeModel2.fit(x_train, y_train)
+dt2Pred = decisionTreeModel2.predict(x_test)
+dt2PerformanceReport = classification_report(y_test, dt2Pred, output_dict=True)
+print("Decision Tree Performance Recap after SMOTE\n", dt2PerformanceReport)
+
+randomForestModel2 = RandomForestClassifier()
+randomForestModel2.fit(x_train, y_train)
+rf2Pred = randomForestModel2.predict(x_test)
+rf2PerformanceReport = classification_report(y_test, rf2Pred, output_dict=True)
+print("Random Forest Performance Recap after SMOTE\n", rf2PerformanceReport)
+
+knnModel2 = KNeighborsClassifier()
+knnModel2.fit(x_train, y_train)
+knn2Pred = knnModel2.predict(x_test)
+knn2PerformanceReport = classification_report(y_test, knn2Pred, output_dict=True)
+print("KNN Recap after SMOTE\n", knn2PerformanceReport)
+
+srn.set_palette("hls")
+plt.figure(figsize=(14, 7))
+ax = plt.subplot(111)
+
+modelNames = ['Logistic Regression', 'Decision Tree', 'Random Forest', 'KNN']
+values = [lr2PerformanceReport['accuracy'], dt2PerformanceReport['accuracy'], rf2PerformanceReport['accuracy'], knn2PerformanceReport['accuracy']]
+modelsShown = np.arange(len(modelNames))
+
+plt.bar(modelsShown, values, align='center', width = 0.15, alpha=0.7, color = 'orange', label= 'accuracy')
+plt.xticks(modelsShown, modelNames)
+           
+ax = plt.subplot(111)
+
+modelNames = ['Logistic Regression', 'Decision Tree', 'Random Forest', 'KNN']
+values = [lr2PerformanceReport['weighted avg']['precision'], dt2PerformanceReport['weighted avg']['precision'], rf2PerformanceReport['weighted avg']['precision'], knn2PerformanceReport['weighted avg']['precision']]
+modelsShown = np.arange(len(modelNames))
+
+plt.bar(modelsShown+0.15, values, align='center', width = 0.15, alpha=0.7, color = 'lightgreen', label = 'precision')
+plt.xticks(modelsShown, modelNames)
+
+ax = plt.subplot(111)
+
+modelNames = ['Logistic Regression', 'Decision Tree', 'Random Forest', 'KNN']
+values = [lr2PerformanceReport['weighted avg']['recall'], dt2PerformanceReport['weighted avg']['recall'], rf2PerformanceReport['weighted avg']['recall'], knn2PerformanceReport['weighted avg']['recall']]
+modelsShown = np.arange(len(modelNames))
+
+plt.bar(modelsShown+0.3, values, align='center', width = 0.15, alpha=0.7, color = 'lightblue', label = 'recall')
+plt.xticks(modelsShown, modelNames)
+
+plt.ylabel('Performance Metrics')
+plt.xlabel('Models')
+plt.title('Model Comparison - Using SMOTE')
+    
+# removing the axis on the top and right of the plot window
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.legend()
+
+plt.show();           
+
 
 
 """ Data Visualization """
