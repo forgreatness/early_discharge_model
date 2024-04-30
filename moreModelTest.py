@@ -105,11 +105,11 @@ testingModels = [decisionTreeModel, randomForestModel, knnModel, lrModel]
 """    MODEL Evaluation     """
 from sklearn.metrics import classification_report
 
-for model in testingModels:
-    model.fit(scaled_x_train, y_train) # fit the model
-    y_pred= model.predict(x_test) # then predict on the test set
-    print(f'Model: {type(model).__name__}')
-    print(classification_report(y_test, y_pred))
+# for model in testingModels:
+#     model.fit(scaled_x_train, y_train) # fit the model
+#     y_pred= model.predict(x_test) # then predict on the test set
+#     print(f'Model: {type(model).__name__}')
+#     print(classification_report(y_test, y_pred))
     
 
     
